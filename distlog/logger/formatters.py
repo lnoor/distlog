@@ -40,6 +40,7 @@ class _CommonFormatter(logging.Formatter):
         record.message = record.getMessage().replace('\n', '\\n')
         record.asctime = self.formatTime(record, self.datefmt)
         record.hostname = os.uname().nodename
+        #record.pid = os.getpid()
         if record.exc_info:
             if not record.exc_text:
                 record.exc_text = self.formatException(record.exc_info).\
