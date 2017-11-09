@@ -24,7 +24,6 @@ BINDPOINT = "tcp://*:6000"
 
 def publisher_thread():
     handler = ZmqPUBHandler(CONNECTPOINT,  zmq.Context())
-    handler.set_topic('T', 'J')
     handler.setFormatter(JSONFormatter())
 
     time.sleep(1)
@@ -46,7 +45,7 @@ def subscriber_thread():
             break
 
         msg = subscriber.recv_multipart()
-        assert msg[0] == b'TLJ'
+        assert msg[0] == b'PLJ'
         data = json.loads(cast_unicode(msg[1]))
         assert data['name'] == 'name'
         assert data['levelno'] == 20

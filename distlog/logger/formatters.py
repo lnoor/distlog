@@ -17,7 +17,7 @@ import json
 import pickle
 
 
-class _CommonFormatter(logging.Formatter):
+class Serializer(logging.Formatter):
 
     """Common base class for formatters."""
 
@@ -48,8 +48,13 @@ class _CommonFormatter(logging.Formatter):
         record.args = None
         return record.__dict__
 
+    @property
+    def encoding(self):
+        """Describe the encoding used."""
+        raise NotImplementedError()
 
-class JSONFormatter(_CommonFormatter):
+
+class JSONFormatter(Serializer):
 
     """Formatter to convert to JSON format."""
 
@@ -65,8 +70,17 @@ class JSONFormatter(_CommonFormatter):
         """
         return json.dumps(self._extract_record(record))
 
+    @property
+    def encoding(self):
+        """Describe the encoding used.
 
-class PickleFormatter(_CommonFormatter):
+        :return string: encoding indicator
+
+        """
+        return 'J'
+
+
+class PickleFormatter(Serializer):
 
     """Formatter to convert to pickle format."""
 
@@ -81,3 +95,12 @@ class PickleFormatter(_CommonFormatter):
 
         """
         return pickle.dumps(self._extract_record(record), 3)
+
+    @property
+    def encoding(self):
+        """Describe the encoding used.
+
+        :return string: encoding indicator
+
+        """
+        return 'P'

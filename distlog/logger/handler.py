@@ -16,6 +16,7 @@ import logging
 import zmq
 from zmq.utils.strtypes import cast_bytes
 
+from .formatters import Serializer
 
 TOPIC_SEPARATOR = ''
 TOPIC_SYSTEM = 'TSP'
@@ -79,7 +80,7 @@ class ZmqPUBHandler(logging.Handler):
     socket = None
     context = None
 
-    def __init__(self, endpoint, context=None):
+    def __init__(self, endpoint, context=None,  system='P'):
         """Create a ZmqPUBHandler.
 
         This creates the 0MQ PUB socket and connects its with an
@@ -90,6 +91,10 @@ class ZmqPUBHandler(logging.Handler):
 
         """
         super().__init__()
+
+        assert system in TOPIC_SYSTEM
+        self._system = system
+
         if isinstance(endpoint, zmq.Socket):
             self.socket = endpoint
             self.context = self.socket.context
@@ -98,7 +103,7 @@ class ZmqPUBHandler(logging.Handler):
             self.socket = self.context.socket(zmq.PUB)
             self.socket.connect(endpoint)
 
-    def set_topic(self, system, encoding):
+    def set_topic(self, encoding):
         """Set message topic elements.
 
         Creates the topic strings for log and performance messages.
@@ -106,11 +111,10 @@ class ZmqPUBHandler(logging.Handler):
         :param encoding: the encoding topic
 
         """
-        assert system in TOPIC_SYSTEM
         assert encoding in TOPIC_ENCODING
 
         self.log_topic = TOPIC_SEPARATOR.join(
-            [system, TOPIC_LOGGING, encoding]
+            [self._system, TOPIC_LOGGING, encoding]
         )
 
     def emit(self, record):
@@ -123,6 +127,14 @@ class ZmqPUBHandler(logging.Handler):
             self.handleError(record)
             return
         self.socket.send_multipart([btopic, bmsg])
+
+    def setFormatter(self,  fmt):
+        """Set the formatter for this handler."""
+        if not isinstance(fmt, Serializer):
+            raise TypeError('setFormatter of ZmPUBHandler expects a Serializer'
+                            ' derived object')
+        super(ZmqPUBHandler, self).setFormatter(fmt)
+        self.set_topic(fmt.encoding)
 
 #    def send_perf_data(self, data):
 #        bdata = cast_bytes(data)
