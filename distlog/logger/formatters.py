@@ -13,8 +13,11 @@ __licence__ = "GNU General Public Licence v3"
 
 import logging
 import os
-import json
 import pickle
+try:
+    import jsonext as json
+except:
+    import json
 
 
 class Serializer(logging.Formatter):
