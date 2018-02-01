@@ -19,8 +19,8 @@ except:
     from distlog.logger.formatters import JSONFormatter
 
 
-CONNECTPOINT = "tcp://localhost:6000"
-BINDPOINT = "tcp://*:6000"
+CONNECTPOINT = "tcp://localhost:6001"
+BINDPOINT = "tcp://*:6001"
 
 def publisher_thread():
     handler = ZmqPUBHandler(CONNECTPOINT,  zmq.Context())
@@ -57,12 +57,12 @@ def subscriber_thread():
 
 
 def test_handler():
-    s_thread = Thread(target=subscriber_thread)
     p_thread = Thread(target=publisher_thread)
-    s_thread.start()
     p_thread.start()
 
-    s_thread.join()
+    # Do NOT use a thread for the code containing the asserts,
+    # the exceptions will not be passed to the main thread.
+    subscriber_thread()
     p_thread.join()
 
 if __name__ == '__main__':
