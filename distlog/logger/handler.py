@@ -80,7 +80,7 @@ class ZmqPUBHandler(logging.Handler):
     socket = None
     context = None
 
-    def __init__(self, endpoint, context=None,  system='P'):
+    def __init__(self, endpoint, context=None, system='P'):
         """Create a ZmqPUBHandler.
 
         This creates the 0MQ PUB socket and connects its with an
@@ -128,7 +128,7 @@ class ZmqPUBHandler(logging.Handler):
             return
         self.socket.send_multipart([btopic, bmsg])
 
-    def setFormatter(self,  fmt):
+    def setFormatter(self, fmt):  # noqa
         """Set the formatter for this handler."""
         if not isinstance(fmt, Serializer):
             raise TypeError('setFormatter of ZmPUBHandler expects a Serializer'

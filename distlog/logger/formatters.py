@@ -16,7 +16,7 @@ import os
 import pickle
 try:
     import jsonext as json
-except:
+except ImportError:
     import json
 
 
@@ -46,7 +46,7 @@ class Serializer(logging.Formatter):
         if record.exc_info:
             if not record.exc_text:
                 record.exc_text = self.formatException(record.exc_info).\
-                    replace('\n',  '\\n')
+                    replace('\n', '\\n')
         record.exc_info = None
         record.args = None
         return record.__dict__
