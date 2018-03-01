@@ -43,7 +43,7 @@ class LogRecord(logging.LogRecord):
             msg, args, exc_info,
             func, sinfo, **kwargs
         )
-        self.context = _context.top.context
+        self.context = _context.top.context if _context.top else None
 
 
 class Task(object):
