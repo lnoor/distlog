@@ -10,12 +10,12 @@ import zmq
 from zmq.utils.strtypes import cast_unicode
 
 try:
-    from distlog.logger.handler import ZmqPUBHandler
+    from distlog.logger.handler import ZmqHandler
     from distlog.logger.formatters import JSONFormatter
 except:
     import sys
     sys.path.append('..')
-    from distlog.logger.handler import ZmqPUBHandler
+    from distlog.logger.handler import ZmqHandler
     from distlog.logger.formatters import JSONFormatter
 
 
@@ -23,7 +23,7 @@ CONNECTPOINT = "tcp://localhost:6001"
 BINDPOINT = "tcp://*:6001"
 
 def publisher_thread():
-    handler = ZmqPUBHandler(CONNECTPOINT,  zmq.Context())
+    handler = ZmqHandler(CONNECTPOINT,  zmq.Context())
     handler.setFormatter(JSONFormatter())
 
     time.sleep(1)
@@ -35,8 +35,7 @@ def publisher_thread():
 
 def subscriber_thread():
     ctx = zmq.Context()
-    subscriber = ctx.socket(zmq.SUB)
-    subscriber.subscribe('')
+    subscriber = ctx.socket(zmq.PULL)
     subscriber.bind(BINDPOINT)
 
     count = 0

@@ -4,7 +4,7 @@ import logging
 import distlog
 
 logger = logging.getLogger()
-handler = distlog.ZmqPUBHandler('tcp://localhost:5010')
+handler = distlog.ZmqHandler('tcp://localhost:5010')
 handler.setFormatter(distlog.JSONFormatter())
 logger.addHandler(handler)
 logger.setLevel(logging.INFO)

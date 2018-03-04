@@ -71,7 +71,7 @@ Finally the ENCODING defines how the message is transferred:
 """
 
 
-class ZmqPUBHandler(logging.Handler):
+class ZmqHandler(logging.Handler):
 
     """0MQ transport implementation."""
 
@@ -81,10 +81,9 @@ class ZmqPUBHandler(logging.Handler):
     context = None
 
     def __init__(self, endpoint, context=None, system='P'):
-        """Create a ZmqPUBHandler.
+        """Create a ZmqHandler.
 
-        This creates the 0MQ PUB socket and connects its with an
-        endpoint.
+        This creates the 0MQ PUSH socket and connects its with an endpoint.
         :param string endpoint: A 0MQ endpoint like `tcp://localhost:11223`.
         :param socket endpoint: An endpoint can also be a connected socket.
         :param context: A ZMQ context.
@@ -100,7 +99,7 @@ class ZmqPUBHandler(logging.Handler):
             self.context = self.socket.context
         else:
             self.context = context or zmq.Context.instance()
-            self.socket = self.context.socket(zmq.PUB)
+            self.socket = self.context.socket(zmq.PUSH)
             self.socket.connect(endpoint)
 
     def set_topic(self, encoding):
@@ -131,9 +130,9 @@ class ZmqPUBHandler(logging.Handler):
     def setFormatter(self, fmt):  # noqa
         """Set the formatter for this handler."""
         if not isinstance(fmt, Serializer):
-            raise TypeError('setFormatter of ZmPUBHandler expects a Serializer'
+            raise TypeError('setFormatter of ZmHandler expects a Serializer'
                             ' derived object')
-        super(ZmqPUBHandler, self).setFormatter(fmt)
+        super(ZmqHandler, self).setFormatter(fmt)
         self.set_topic(fmt.encoding)
 
 #    def send_perf_data(self, data):
