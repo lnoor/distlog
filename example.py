@@ -10,10 +10,10 @@ logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
 def main():
-    with distlog.task('toplevel') as job:
+    with distlog.task('toplevel', user='leo') as job:
         print('into task')
         logger.info('into task')
-        with distlog.to('subtask') as job:
+        with distlog.to('subtask', arg=42) as job:
             print('into subtask')
             logger.info('into task')
             job.success('subtask done')
