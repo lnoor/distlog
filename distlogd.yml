@@ -1,0 +1,8 @@
+locations:
+    - ./plugins
+plugins:
+    -
+        package: distlogd.plugins.forward
+        options:
+            key: value
+            etc: etc

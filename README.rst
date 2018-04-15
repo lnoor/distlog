@@ -133,15 +133,5 @@ configurable rule set. Based on the rule(s) which triggered, the message is
 forwarded to one or more processors.
 
 The configuration file, probably a YAML file, may instruct `distlogd` to load
-processors as plugins and rules that determine when a message should be
-processed by a plugin.
-
-A rule consists of a selector and an optional set of actions.
-
-A selector is a json-path string selecting one or more fields in the log JSON
-message combined with a regular expression which the selected field should
-match.
-
-On a match the actions belonging the the rule are executed.
-These are meant to set one or more variables on the processor.
-Thereafter the message is passed on to the processor for further handling.
+processors as plugins. A processor will apply one or more filters on a message
+and uses the outcome to decide to handle a message or not.
