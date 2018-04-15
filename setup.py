@@ -40,5 +40,5 @@ setup(
         '': ['LICENSE']
     },
 
-    requires=['zmq']
+    requires=['pyzmq',  'zmq']
 )
