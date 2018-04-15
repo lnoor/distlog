@@ -40,5 +40,5 @@ setup(
         '': ['LICENSE']
     },
 
-    install_requires=['pyzmq',  'zmq']
+    #install_requires=['pyzmq',  'zmq']
 )
