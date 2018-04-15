@@ -35,10 +35,10 @@ setup(
     ],
 
     keywords='scoped structured distributed logging',
-    packages=find_packages(),
+    packages=find_packages(exclude=['tests']),
     package_data={
         '': ['LICENSE']
     },
 
-    #install_requires=['docutils', 'requests', 'jsonpointer', 'pyyaml']
+    requires=['zmq']
 )
