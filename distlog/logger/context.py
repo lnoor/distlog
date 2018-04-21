@@ -18,32 +18,11 @@ __copyright__ = "Copyright (C) 2017 Leo Noordergraaf"
 __licence__ = "GNU General Public Licence v3"
 
 import logging
+import os
+import io
+import traceback
 import uuid
 import six
-
-
-class LogRecord(logging.LogRecord):
-
-    """
-    :py:class:`~logging.LogRecord` replacement.
-
-    This class replaces the standard :py:class:`~logging.LogRecord` class.
-    It provides a single change: when an instance is created the instance is
-    extended with a context attribute containing the current scope's context.
-    """
-
-    def __init__(
-        self,
-        name, level, pathname, lineno,
-        msg, args, exc_info,
-        func=None, sinfo=None, **kwargs
-    ):
-        super().__init__(
-            name, level, pathname, lineno,
-            msg, args, exc_info,
-            func, sinfo, **kwargs
-        )
-        self.context = _context.top.context if _context.top else None
 
 
 class Task(object):
@@ -281,7 +260,23 @@ class LogContext(object):
 
 
 _context = LogContext()
+
 if six.PY2:
+    class LogRecord(logging.LogRecord):
+
+        """
+        :py:class:`~logging.LogRecord` replacement.
+
+        This class replaces the standard :py:class:`~logging.LogRecord` class.
+        It provides a single change: when an instance is created the instance is
+        extended with a context attribute containing the current scope's context.
+        """
+
+        def __init__(self, name, level, pathname, lineno, msg, args, exc_info, func=None):
+            super(LogRecord, self).__init__(name, level, pathname, lineno, msg, args, exc_info, func)
+            self.context = _context.top.context if _context.top else None
+
+
     class Logger(logging.Logger):
         def makeRecord(self, name, level, fn, lno, msg, args, exc_info, func=None, extra=None):
             """
@@ -295,11 +290,107 @@ if six.PY2:
                         raise KeyError("Attempt to overwrite %r in LogRecord" % key)
                     rv.__dict__[key] = extra[key]
             return rv
-    _loggerClass = logging.getLoggerClass()
-    logging.setLoggerClass(Logger)
+
+        def findCaller(self):
+            """
+            Find the stack frame of the caller so that we can note the source
+            file name, line number and function name.
+            """
+            f = logging.currentframe()
+            #On some versions of IronPython, currentframe() returns None if
+            #IronPython isn't run with -X:Frames.
+            if f is not None:
+                f = f.f_back
+            rv = "(unknown file)", 0, "(unknown function)"
+            while hasattr(f, "f_code"):
+                co = f.f_code
+                filename = os.path.normcase(co.co_filename)
+                if filename == logging._srcfile or filename == __file__:
+                    f = f.f_back
+                    continue
+                rv = (co.co_filename, f.f_lineno, co.co_name)
+                break
+            return rv
 else:
+    class LogRecord(logging.LogRecord):
+
+        """
+        :py:class:`~logging.LogRecord` replacement.
+
+        This class replaces the standard :py:class:`~logging.LogRecord` class.
+        It provides a single change: when an instance is created the instance is
+        extended with a context attribute containing the current scope's context.
+        """
+
+        def __init__(self, name, level, pathname, lineno, msg, args, exc_info, func=None, sinfo=None):
+            super().__init__(name, level, pathname, lineno, msg, args, exc_info, func, sinfo)
+            self.context = _context.top.context if _context.top else None
+
+    class Logger(logging.Logger):
+        def makeRecord(self, name, level, fn, lno, msg, args, exc_info, func=None, extra=None,  sinfo=None):
+            """
+            A factory method which can be overridden in subclasses to create
+            specialized LogRecords.
+            """
+            rv = LogRecord(name, level, fn, lno, msg, args, exc_info, func,  sinfo)
+            if extra is not None:
+                for key in extra:
+                    if (key in ["message", "asctime"]) or (key in rv.__dict__):
+                        raise KeyError("Attempt to overwrite %r in LogRecord" % key)
+                    rv.__dict__[key] = extra[key]
+            return rv
+
+        def findCaller(self, stack_info=False):
+            """
+            Find the stack frame of the caller so that we can note the source
+            file name, line number and function name.
+            """
+            f = logging.currentframe()
+            #On some versions of IronPython, currentframe() returns None if
+            #IronPython isn't run with -X:Frames.
+            if f is not None:
+                f = f.f_back
+            rv = "(unknown file)", 0, "(unknown function)", None
+            while hasattr(f, "f_code"):
+                co = f.f_code
+                filename = os.path.normcase(co.co_filename)
+                if filename == logging._srcfile or filename == __file__:
+                    f = f.f_back
+                    continue
+                sinfo = None
+                if stack_info:
+                    sio = io.StringIO()
+                    sio.write('Stack (most recent call last):\n')
+                    traceback.print_stack(f, file=sio)
+                    sinfo = sio.getvalue()
+                    if sinfo[-1] == '\n':
+                        sinfo = sinfo[:-1]
+                    sio.close()
+                rv = (co.co_filename, f.f_lineno, co.co_name, sinfo)
+                break
+            return rv
+
     _logRecordFactory = logging.getLogRecordFactory()
     logging.setLogRecordFactory(LogRecord)
+
+class RootLogger(Logger):
+    """
+    A root logger is not that different to any other logger, except that
+    it must have a logging level and there is only one instance of it in
+    the hierarchy.
+    """
+    def __init__(self, level):
+        """
+        Initialize the logger with the name "root".
+        """
+        Logger.__init__(self, "root", level)
+
+logging.root = RootLogger(logging.WARNING)
+logging.Logger.root = logging.root
+logging.Logger.manager = logging.Manager(logging.root)
+
+_loggerClass = logging.getLoggerClass()
+logging.setLoggerClass(Logger)
 
 
 def task(msg, *args, **kwargs):

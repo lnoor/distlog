@@ -89,33 +89,33 @@ Over the ØMQ socket the following messages are sent (pretty printed):
 .. code-block:: json
 
     {
-        "exc_info": null,
-        "process": 13732,
-        "processName": "MainProcess",
-        "module": "context",
-        "name": "root",
-        "created": 1523718349.0820286,
-        "levelname": "INFO",
-        "args": null,
-        "filename": "context.py",
         "context": {
-            "user": "leo",
-            "key": "0@81a5da22-7600-4085-a5dd-78ca1c1682b7"
+            "key": "0@e252a11f-d33d-483d-ba08-bc8f642b2f10",
+            "user": "leo"
         },
-        "asctime": "2018-04-14 17:05:49,082",
-        "funcName": "__enter__",
-        "lineno": 188,
-        "hostname": "obelix",
-        "msg": "toplevel",
-        "levelno": 20,
-        "threadName": "MainThread",
-        "pathname": "/home/leo/src/distlog/distlog/logger/context.py",
-        "relativeCreated": 129673.73085021973,
-        "exc_text": null,
+        "filename": "example.py",
+        "funcName": "main",
         "stack_info": null,
+        "args": null,
+        "process": 6156,
+        "hostname": "obelix",
+        "msecs": 148.06699752807617,
         "message": "toplevel",
-        "thread": 140384598415104,
-        "msecs": 82.02862739562988
+        "name": "root",
+        "module": "example",
+        "thread": 139753641113344,
+        "msg": "toplevel",
+        "lineno": 13,
+        "threadName": "MainThread",
+        "exc_text": null,
+        "exc_info": null,
+        "levelno": 20,
+        "asctime": "2018-04-18 23:03:19,148",
+        "relativeCreated": 379328.7272453308,
+        "levelname": "INFO",
+        "processName": "MainProcess",
+        "created": 1524085399.148067,
+        "pathname": "/home/leo/src/distlog/example.py"
     }
 
 This is basically Python's LogRecord structure. It has an extra field `context`
@@ -126,167 +126,168 @@ The `key` field consists of three parts:
 
 * message sequence number
 * unique toplevel scope identification
-* subscope sequence number
+* optional subscope sequence number
 
-Sidenote:
-    Clearly the fields `funcName`, `lineno`, `module`, `filename` and `pathname`
-    need more work to display correct values.
 
 The other JSON messages are:
 
 .. code-block:: json
 
     {
-        "exc_info": null,
-        "process": 13732,
-        "processName": "MainProcess",
-        "module": "example",
-        "name": "root",
-        "created": 1523718609.7217119,
-        "levelname": "INFO",
-        "args": null,
-        "filename": "example.py",
         "context": {
-            "user": "leo",
-            "key": "1@81a5da22-7600-4085-a5dd-78ca1c1682b7"
+            "key": "1@e252a11f-d33d-483d-ba08-bc8f642b2f10",
+            "user": "leo"
         },
-        "asctime": "2018-04-14 17:10:09,721",
+        "filename": "example.py",
         "funcName": "main",
+        "stack_info": null,
+        "args": null,
+        "process": 6156,
+        "hostname": "obelix",
+        "msecs": 824.9077796936035,
+        "message": "into task",
+        "name": "root",
+        "module": "example",
+        "thread": 139753641113344,
+        "msg": "into task",
         "lineno": 15,
-        "hostname": "obelix",
-        "msg": "into task",
-        "levelno": 20,
         "threadName": "MainThread",
-        "pathname": "/home/leo/src/distlog/example.py",
-        "relativeCreated": 390313.4140968323,
         "exc_text": null,
-        "stack_info": null,
-        "message": "into task",
-        "thread": 140384598415104,
-        "msecs": 721.7118740081787
+        "exc_info": null,
+        "levelno": 20,
+        "asctime": "2018-04-18 23:06:30,824",
+        "relativeCreated": 571005.5680274963,
+        "levelname": "INFO",
+        "processName": "MainProcess",
+        "created": 1524085590.8249078,
+        "pathname": "/home/leo/src/distlog/example.py"
     }
 
 .. code-block:: json
 
     {
-        "exc_info": null,
-        "process": 13732,
-        "processName": "MainProcess",
-        "module": "context",
-        "name": "root",
-        "created": 1523718709.0561981,
-        "levelname": "INFO",
-        "args": null,
-        "filename": "context.py",
         "context": {
-            "arg": 42,
-            "key": "0@81a5da22-7600-4085-a5dd-78ca1c1682b7/1"
+            "key": "0@e252a11f-d33d-483d-ba08-bc8f642b2f10/1",
+            "arg": 42
         },
-        "asctime": "2018-04-14 17:11:49,056",
-        "funcName": "__enter__",
-        "lineno": 188,
-        "hostname": "obelix",
-        "msg": "subtask",
-        "levelno": 20,
-        "threadName": "MainThread",
-        "pathname": "/home/leo/src/distlog/distlog/logger/context.py",
-        "relativeCreated": 489647.9003429413,
-        "exc_text": null,
+        "filename": "example.py",
+        "funcName": "main",
         "stack_info": null,
+        "args": null,
+        "process": 6156,
+        "hostname": "obelix",
+        "msecs": 113.48962783813477,
         "message": "subtask",
-        "thread": 140384598415104,
-        "msecs": 56.1981201171875
+        "name": "root",
+        "module": "example",
+        "thread": 139753641113344,
+        "msg": "subtask",
+        "lineno": 16,
+        "threadName": "MainThread",
+        "exc_text": null,
+        "exc_info": null,
+        "levelno": 20,
+        "asctime": "2018-04-18 23:07:18,113",
+        "relativeCreated": 618294.1498756409,
+        "levelname": "INFO",
+        "processName": "MainProcess",
+        "created": 1524085638.1134896,
+        "pathname": "/home/leo/src/distlog/example.py"
     }
 
 .. code-block:: json
 
     {
-        "exc_info": null,
-        "process": 13732,
-        "processName": "MainProcess",
-        "module": "example",
-        "name": "root",
-        "created": 1523718738.5430636,
-        "levelname": "INFO",
-        "args": null,
-        "filename": "example.py",
         "context": {
-            "arg": 42,
-            "key": "1@81a5da22-7600-4085-a5dd-78ca1c1682b7/1"
+            "key": "1@e252a11f-d33d-483d-ba08-bc8f642b2f10/1",
+            "arg": 42
         },
-        "asctime": "2018-04-14 17:12:18,543",
+        "filename": "example.py",
         "funcName": "main",
-        "lineno": 18,
-        "hostname": "obelix",
-        "msg": "into task",
-        "levelno": 20,
-        "threadName": "MainThread",
-        "pathname": "/home/leo/src/distlog/example.py",
-        "relativeCreated": 519134.7658634186,
-        "exc_text": null,
         "stack_info": null,
+        "args": null,
+        "process": 6156,
+        "hostname": "obelix",
+        "msecs": 585.9096050262451,
         "message": "into task",
-        "thread": 140384598415104,
-        "msecs": 543.0636405944824
-    }
-
-.. code-block:: json
-
-    {
-        "exc_info": null,
-        "process": 13732,
-        "processName": "MainProcess",
-        "module": "context",
         "name": "root",
-        "created": 1523718879.3886158,
-        "levelname": "INFO",
-        "args": null,
-        "filename": "context.py",
-        "context": {
-            "arg": 42,
-            "key": "2@81a5da22-7600-4085-a5dd-78ca1c1682b7/1"
-        },
-        "asctime": "2018-04-14 17:14:39,388",
-        "funcName": "__exit__",
-        "lineno": 207,
-        "hostname": "obelix",
-        "msg": "subtask done",
-        "levelno": 20,
-        "threadName": "MainThread",
-        "pathname": "/home/leo/src/distlog/distlog/logger/context.py",
-        "relativeCreated": 659980.318069458,
-        "exc_text": null,
-        "stack_info": null,
-        "message": "subtask done",
-        "thread": 140384598415104,
-        "msecs": 388.61584663391113
-    }
-
-.. code-block:: json
-
-    {
-        "exc_info": null,
-        "process": 13732,
-        "processName": "MainProcess",
         "module": "example",
-        "name": "root",
-        "created": 1523718913.026932,
-        "levelname": "INFO",
-        "args": null,
-        "filename": "example.py",
-        "context": null,
-        "asctime": "2018-04-14 17:15:13,026",
-        "funcName": "main",
-        "lineno": 21,
-        "hostname": "obelix",
-        "msg": "all done",
-        "levelno": 20,
+        "thread": 139753641113344,
+        "msg": "into task",
+        "lineno": 18,
         "threadName": "MainThread",
-        "pathname": "/home/leo/src/distlog/example.py",
-        "relativeCreated": 693618.634223938,
         "exc_text": null,
-        "stack_info": null,
-        "message": "all done",
-        "thread": 140384598415104,
-        "msecs": 26.9320011138916
+        "exc_info": null,
+        "levelno": 20,
+        "asctime": "2018-04-18 23:07:35,585",
+        "relativeCreated": 635766.569852829,
+        "levelname": "INFO",
+        "processName": "MainProcess",
+        "created": 1524085655.5859096,
+        "pathname": "/home/leo/src/distlog/example.py"
     }
+
+.. code-block:: json
+
+    {
+        "context": {
+            "key": "2@e252a11f-d33d-483d-ba08-bc8f642b2f10/1",
+            "arg": 42
+        },
+        "filename": "example.py",
+        "funcName": "main",
+        "stack_info": null,
+        "args": null,
+        "process": 6156,
+        "hostname": "obelix",
+        "msecs": 411.38386726379395,
+        "message": "subtask done",
+        "name": "root",
+        "module": "example",
+        "thread": 139753641113344,
+        "msg": "subtask done",
+        "lineno": 19,
+        "threadName": "MainThread",
+        "exc_text": null,
+        "exc_info": null,
+        "levelno": 20,
+        "asctime": "2018-04-18 23:08:13,411",
+        "relativeCreated": 673592.0441150665,
+        "levelname": "INFO",
+        "processName": "MainProcess",
+        "created": 1524085693.4113839,
+        "pathname": "/home/leo/src/distlog/example.py"
+    }
+
+Note that the message shows the contents of the success() parameters.
+
+.. code-block:: json
+
+    {
+        "context": null,
+        "filename": "example.py",
+        "funcName": "main",
+        "stack_info": null,
+        "args": null,
+        "process": 6156,
+        "hostname": "obelix",
+        "msecs": 740.2544021606445,
+        "message": "all done",
+        "name": "root",
+        "module": "example",
+        "thread": 139753641113344,
+        "msg": "all done",
+        "lineno": 21,
+        "threadName": "MainThread",
+        "exc_text": null,
+        "exc_info": null,
+        "levelno": 20,
+        "asctime": "2018-04-18 23:08:52,740",
+        "relativeCreated": 712920.9146499634,
+        "levelname": "INFO",
+        "processName": "MainProcess",
+        "created": 1524085732.7402544,
+        "pathname": "/home/leo/src/distlog/example.py"
+    }
+
+Outside of any context so the `context` field is null/None.
