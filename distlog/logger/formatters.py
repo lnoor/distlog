@@ -42,7 +42,7 @@ class Serializer(logging.Formatter):
         """
         record.message = record.getMessage().replace('\n', '\\n')
         record.asctime = self.formatTime(record, self.datefmt)
-        record.hostname = os.uname().nodename
+        record.hostname = os.uname()[1]
         if record.exc_info:
             if not record.exc_text:
                 record.exc_text = self.formatException(record.exc_info).\
@@ -97,7 +97,11 @@ class PickleFormatter(Serializer):
         :return: pickled record contents.
 
         """
-        return pickle.dumps(self._extract_record(record), 3)
+        # Python2 does not support pickle protocol 3, so
+        # to transfer data between Python applications regardless
+        # the version their are written in it is best to use the
+        # highest common protocol.
+        return pickle.dumps(self._extract_record(record), 2)
 
     @property
     def encoding(self):

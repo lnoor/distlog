@@ -89,7 +89,7 @@ class ZmqHandler(logging.Handler):
         :param context: A ZMQ context.
 
         """
-        super().__init__()
+        super(ZmqHandler, self).__init__()
 
         assert system in TOPIC_SYSTEM
         self._system = system

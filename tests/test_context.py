@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import six
 
 if __name__ == '__main__':
     import sys
@@ -9,7 +10,10 @@ if __name__ == '__main__':
 import distlog.logger.context as context
 
 def test_globals():
-    assert logging.getLogRecordFactory() == context.LogRecord
+    if six.PY3:
+        assert logging.getLogRecordFactory() == context.LogRecord
+    assert type(logging.root) == context.RootLogger
+    assert logging._loggerClass == context.Logger
     assert type(context._context) == context.LogContext
 
 def test_context():
@@ -46,7 +50,6 @@ def test_logrecord():
             global rec
             rec = record
     v = vang(logging.DEBUG)
-    logging.lastResort = v
     log.addHandler(v)
 
     tsk = context.Task('a', 'msg %d', 4, aap='noot', mies='teun')
@@ -87,8 +90,12 @@ def test_contextmanager():
     log.addHandler(v)
 
     tsk = context.Task('c', 'msg %d', 8)
-    with tsk:
-        raise ValueError('bok')
+    try:
+        with tsk:
+            raise ValueError('bok')
+    except ValueError:
+        pass
+    assert hasattr(rec, 'context')
 
 if __name__ == '__main__':
     test_globals()

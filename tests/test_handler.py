@@ -9,16 +9,18 @@ from threading import Thread
 import zmq
 from zmq.utils.strtypes import cast_unicode
 
+print("import ZmqHandler")
 try:
     from distlog.logger.handler import ZmqHandler
     from distlog.logger.formatters import JSONFormatter
 except:
+    print("try again")
     import sys
     sys.path.append('..')
     from distlog.logger.handler import ZmqHandler
     from distlog.logger.formatters import JSONFormatter
 
-
+print("succeeded")
 CONNECTPOINT = "tcp://localhost:6001"
 BINDPOINT = "tcp://*:6001"
 
