@@ -3,6 +3,7 @@
 
 import logging
 import six
+import pytest
 
 if __name__ == '__main__':
     import sys
@@ -41,14 +42,18 @@ def test_context():
     assert id(context._context.pop()) == id(x)
     assert len(context._context.context) == 0
 
-rec = None
 def test_logrecord():
     logging.basicConfig(level=logging.DEBUG)
-    log = logging.getLogger(__name__)
+    log = logging.getLogger()
+    log.handlers = [] # make sure only our handler gets installed
+    log.propagate = False
+    assert type(log) == context.RootLogger
+    rec = []
     class vang(logging.Handler):
         def emit(self, record):
-            global rec
-            rec = record
+            #print("EMITTING")
+            assert type(record) == context.LogRecord
+            rec.append(record)
     v = vang(logging.DEBUG)
     log.addHandler(v)
 
@@ -60,10 +65,13 @@ def test_logrecord():
     assert tsk.counter == 0
 
     context._context.push(tsk)
+    assert len(rec) == 0
     log.debug('lala %s',  'dada')
-    assert hasattr(rec, 'context')
-    assert 'aap' in rec.context
-    assert rec.context['aap'] == 'noot'
+    assert len(rec) == 1
+    assert type(rec[0]) == context.LogRecord
+    assert hasattr(rec[0], 'context')
+    assert 'aap' in rec[0].context
+    assert rec[0].context['aap'] == 'noot'
 
 def test_task():
     tsk = context.Task('b', 'msg %d', 6,  wim='jet', zus='gijs')
@@ -72,7 +80,7 @@ def test_task():
     tsk.bind(does='schapen')
     assert 'does' in tsk.data
     assert tsk.data['does'] == 'schapen'
-    assert tsk.smsg is None
+    assert tsk.smsg is tsk.msg
     tsk.success('%s: %s', 'zeg', 'joepie')
     assert tsk.smsg == '%s: %s'
     assert tsk.sargs[0] == 'zeg'
@@ -80,22 +88,30 @@ def test_task():
 
 def test_contextmanager():
     logging.basicConfig(level=logging.DEBUG)
-    log = logging.getLogger(__name__)
+    log = logging.getLogger()
+    log.handlers = [] # make sure only our handler gets installed
+    log.propagate = False
+    assert type(log) == context.RootLogger
+    rec = []
     class vang(logging.Handler):
         def emit(self, record):
-            global rec
-            rec = record
+            #print("EMITTING")
+            rec.append(record)
     v = vang(logging.DEBUG)
-    logging.lastResort = v
     log.addHandler(v)
 
-    tsk = context.Task('c', 'msg %d', 8)
-    try:
+    tsk = context.Task('c', 'msg %d', 8, sample='good')
+    assert len(rec) == 0
+    with pytest.raises(ValueError):
         with tsk:
+            #pass
             raise ValueError('bok')
-    except ValueError:
-        pass
-    assert hasattr(rec, 'context')
+    assert len(rec) == 2
+    for r in rec:
+        assert type(r) == context.LogRecord
+        assert hasattr(r, 'context')
+        assert 'sample' in r.context
+        assert r.context['sample'] == 'good'
 
 if __name__ == '__main__':
     test_globals()

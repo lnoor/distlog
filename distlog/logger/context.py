@@ -69,8 +69,8 @@ class Task(object):
         self.msg = msg
         self.args = args
         self.data = kwargs
-        self.smsg = None
-        self.sargs = None
+        self.smsg = msg
+        self.sargs = args
         self.counter = 0
         self.tasks = 0
 
@@ -200,7 +200,7 @@ class Task(object):
         :rtype: bool False, do not interfere with exceptions
         """
         if exc_type:
-            logging.exception('FAILED ' + self.msg, *self.args)
+            logging.exception('FAILED ' + self.msg % self.args, exc_type, exc_value, traceback)
         elif self.smsg:
             logging.info(self.smsg, *self.sargs)
         _context.pop()
@@ -305,7 +305,7 @@ if six.PY2:
             while hasattr(f, "f_code"):
                 co = f.f_code
                 filename = os.path.normcase(co.co_filename)
-                if filename == logging._srcfile or filename == __file__:
+                if filename == logging._srcfile or filename == _srcfile:
                     f = f.f_back
                     continue
                 rv = (co.co_filename, f.f_lineno, co.co_name)
@@ -323,7 +323,7 @@ else:
         """
 
         def __init__(self, name, level, pathname, lineno, msg, args, exc_info, func=None, sinfo=None):
-            super().__init__(name, level, pathname, lineno, msg, args, exc_info, func, sinfo)
+            super(LogRecord, self).__init__(name, level, pathname, lineno, msg, args, exc_info, func, sinfo)
             self.context = _context.top.context if _context.top else None
 
     class Logger(logging.Logger):
@@ -354,7 +354,7 @@ else:
             while hasattr(f, "f_code"):
                 co = f.f_code
                 filename = os.path.normcase(co.co_filename)
-                if filename == logging._srcfile or filename == __file__:
+                if filename == logging._srcfile or filename == _srcfile:
                     f = f.f_back
                     continue
                 sinfo = None
@@ -391,7 +391,6 @@ logging.Logger.manager = logging.Manager(logging.root)
 
 _loggerClass = logging.getLoggerClass()
 logging.setLoggerClass(Logger)
-
 
 def task(msg, *args, **kwargs):
     """Create a toplevel task.
@@ -471,3 +470,5 @@ def import_task(_id, msg, *args, **kwargs):
     :rtype: :py:class:`~distlog.Task`
     """
     return Task(id, msg, *args, **kwargs)
+
+_srcfile = os.path.normcase(task.__code__.co_filename)

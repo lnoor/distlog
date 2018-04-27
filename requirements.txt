@@ -1,4 +1,4 @@
-pytest
-pyzmq
+pytest==3.2.1
 jsonext
 six
+zmq
