@@ -9,19 +9,6 @@ from zmq.utils.strtypes import cast_unicode
 MEASURE_INTERVAL = 60
 ENDPOINT= 'tcp://*:5010'
 
-class Plugin(object):
-    def match(self, data):
-        raise NotImplementedError
-
-    def handle(self, data):
-        raise NotImplementedError
-
-plugins = []
-def add_plugin(plugin):
-    if not isinstance(plugin, Plugin):
-        raise Exception("{} is not a distlogd plugin".format(plugin.__name__))
-    if plugin not in plugins:
-        plugins.append(plugin)
 
 def main():
     ctx = zmq.Context.instance()
@@ -39,9 +26,7 @@ def main():
             else:
                 data = json.loads(cast_unicode(body))
 
-            for plugin in plugins:
-                if plugin.match(data):
-                    plugin.handle(data)
+            plugins.handle(data)
 
             count += 1
             then = time.time()
